@@ -64,4 +64,24 @@ print(startingData)
 #
 
 Option_One = [None]*POPULATION
-print(startingData[[0]])
+
+k = 0
+
+
+while k <  CYCLES:
+	b = 0
+	for col in startingData:
+		print(col[k])
+		b = b + col[k]
+	Option_One[k] = b
+	k += 1
+print(Option_One, 'aaaaaaa')
+
+#
+# Option 2(main question): best after 1, 2, ...
+#
+
+while l < POPULATION:
+	c  = 0
+	for col in startingData:
+		
