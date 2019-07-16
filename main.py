@@ -8,7 +8,7 @@ POPULATION = 10
 MIN_VAL = 1
 MAX_VAL = 100
 
-improvement = 1.5
+improvement = 1.0
 upperCeeling =  200
 
 if improvement < 1:
@@ -57,31 +57,63 @@ while i < CYCLES:
 	startingData[i] = a
 	i += 1
 	
-print(startingData)
+#print(startingData)
 
 #
 # Option 1: Whatif you end with number 1, 2, ...
 #
 
-Option_One = [None]*POPULATION
+option_One = [None]*POPULATION
 
 k = 0
-
 
 while k <  CYCLES:
 	b = 0
 	for col in startingData:
-		print(col[k])
+		#print(col[k])
 		b = b + col[k]
-	Option_One[k] = b
+	option_One[k] = b
 	k += 1
-print(Option_One, 'aaaaaaa')
+#print(option_One, 'before')
+
+option_One[:]  = [x / CYCLES for x in option_One]
+
+#print(option_One, 'after')
 
 #
 # Option 2(main question): best after 1, 2, ...
 #
 
-while l < POPULATION:
-	c  = 0
-	for col in startingData:
-		
+option_Two = [None]*POPULATION
+secondaryData = startingData
+print(secondaryData)
+
+
+secondaryWaitingTime = x = [[None for _ in range(5)] for _ in range(6)]
+
+m  = 0
+while m < POPULATION:
+	n = 0
+	print(n, m, 'zew')
+	while n < CYCLES and m + 1 < POPULATION:
+		o = 1
+
+		while m + o < POPULATION:
+			while secondaryData[n][m] < secondaryData[n][m + o]:
+				o += 1
+				print(m + o)
+				
+			print(m, n, m + o,  secondaryData[n][m], secondaryData[n][m + o])
+
+			secondaryData[n][m] = secondaryData[n][m + o]
+
+			print(m, n, m + o,  secondaryData[n][m], secondaryData[n][m + o])
+			
+
+
+		#print(secondaryData[n][m],secondaryData[n][m + o], 'chosen')
+					
+		#secondaryData[n][m] = secondaryData[n][m + o]
+		#print(o)
+		n += 1
+	m += 1
