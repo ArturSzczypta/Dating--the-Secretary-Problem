@@ -8,7 +8,7 @@ POPULATION = 10
 MIN_VAL = 1
 MAX_VAL = 100
 
-improvement = 1.0
+improvement = 1
 upperCeeling =  200
 
 if improvement < 1:
@@ -117,3 +117,22 @@ while m < POPULATION:
 		#print(o)
 		n += 1
 	m += 1
+
+
+m = 0
+while m < CYCLES:
+	n = 0
+	print(m, n, 'zew')
+
+	while n < POPULATION - 2:
+		p = 1
+		while secondaryData[m][n] >= secondaryData[m][n + p]:
+			print(p)
+			secondaryData[m][n] = secondaryData[m][n + p]
+			if n + p + 1 == POPULATION:
+				break
+			p += 1
+			
+
+
+	n += 1
