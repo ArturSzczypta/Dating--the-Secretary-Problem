@@ -1,4 +1,12 @@
 
+<<<<<<< Updated upstream
+=======
+import random
+import copy
+import time
+import os.path
+
+>>>>>>> Stashed changes
 
 import random
 import pandas as pd
@@ -60,7 +68,49 @@ while i < CYCLES:
 #print(startingData)
 
 #
+<<<<<<< Updated upstream
 # Option 1: Whatif you end with number 1, 2, ...
+=======
+# Settting up file
+#
+folder_name = 'Dating Pop ' + str(population) + ' Cy  ' \
++ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling)
+
+
+name_detail_One = 'Dating Detail One Pop ' + str(population) + ' Cy  ' \
++ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
+
+name_detail_Two = 'Dating Detail Two Pop ' + str(population) + ' Cy  ' \
++ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
+
+name_detail_Three = 'Dating Detail Three Pop ' + str(population) + ' Cy  ' \
++ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
+
+
+file_summary = 'Dating Summary Pop ' + str(population) + ' Cy  ' \
++ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
+
+folder_location = 'C:\\Users\\Artur\\Desktop\\Coding Files\\Dating Bail Out'
+
+folder = folder_location + '\\' + folder_name
+
+
+file_detail_One  = folder + '\\' + name_detail_One
+file_detail_Two  = folder + '\\' + name_detail_Two
+file_detail_Three  = folder + '\\' + name_detail_Three
+
+file_summary_location  = folder + '\\' + file_summary
+
+
+
+#
+# Iteration over different population sizes and saving results
+>>>>>>> Stashed changes
 #
 
 option_One = [None]*POPULATION
@@ -133,6 +183,67 @@ while m < CYCLES:
 				break
 			p += 1
 			
+<<<<<<< Updated upstream
+=======
+			Option_Three_Crossing_Index[population_iteration - 1] = z
+			Option_Three_Crossing_Value[population_iteration - 1] = option_Three[z]
+			break
+		z += 1
+
+	time_Three_List[population_iteration - 1] = time.time() - time_Two - time_begining
+
+	print('CROSSING', Option_Three_Crossing_Index[population_iteration - 1], Option_Three_Crossing_Value[population_iteration - 1])
+
+	print('-------------------------------------')
+	print('-------------------------------------')
+	print('-------------------------------------')
+
+	print(time_One_List)
+	print(time_Two_List)
+	print(time_Three_List)
+
+	f  = open('file_detail_One',  'w')
+	f.write(option_One + '\n')
+	f.close()
+
+	f  = open('file_detail_Two',  'w')
+	f.write(option_Two + '\n')
+	f.close()
+
+	f  = open('file_detail_Three',  'w')
+	f.write(option_Three + '\n')
+	f.close()
 
 
+>>>>>>> Stashed changes
+
+
+<<<<<<< Updated upstream
 	n += 1
+=======
+print(Option_Three_Max_Score_Index)
+print(Option_Three_Max_Score_Value)
+
+#
+# Saving Data
+#
+
+with open(file_summary, 'w') as f:
+	#Option One
+	f.write('Option One\n')
+	f.write(time_One_List + '\n')
+	f.write('\n')
+
+	f.write('Option Two\n')
+	f.write(time_Two_List + '\n')
+	f.write(option_Two_Steps + '\n')
+	f.write(Option_Two_Max_Score_Index + '\n')
+	f.write(Option_Two_Max_Score_Value + '\n')
+	f.write('\n')
+
+	f.write('Option Three\n')
+	f.write(time_Three_List + '\n')
+	f.write(option_Three_Steps + '\n')
+	f.write(Option_Three_Max_Score_Index + '\n')
+	f.write(Option_Three_Max_Score_Value + '\n')
+>>>>>>> Stashed changes
