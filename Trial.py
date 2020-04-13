@@ -5,22 +5,22 @@ import time
 import os
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 100000
+cycles = 10000
 # Potential dating partners
-population = 100
+population = 10
 # Min value (0 would give nicer averages but no one would date a literal 0)
 min_val = 1
 # Max value (if there'san improvement it will go up with time)
-max_val = 100
+max_val = 10
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 2
+improvement = 1
 # In case you are or become soo attractive that you can hit the limit
 upperCeeling = 200
 
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
-step = 10
+step = 100
 
 
 #
@@ -189,7 +189,7 @@ while population_iteration > 0:
 	#
 
 	def main_compressor(nested_list):
-		return [sum(x)/cycles for x in zip(*nested_list)]
+		return [round(sum(x)/cycles,2) for x in zip(*nested_list)]
 
 
 	option_One = main_compressor(startingData)
@@ -198,8 +198,8 @@ while population_iteration > 0:
 	time_One_List.append(time.time() - time_begining)
 	print('time_One_List',time_One_List)
 	
-	print(option_One, 'OPTION 1')
-	break
+	print('OPTION 1', '\n', option_One)
+	
 
 	
 	#
@@ -713,9 +713,9 @@ while population_iteration > 0:
 		f.close()
 
 	steps_List.append(population_iteration)
-
+	'''
 	population_iteration -= step
-
+'''
 
 #
 # Round times and values
