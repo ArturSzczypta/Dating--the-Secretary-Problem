@@ -7,14 +7,14 @@ import os
 # The higher the value the more presice the values (100000 should be ok)
 cycles = 10
 # Potential dating partners
-population = 9
+population = 10
 # Min value (0 would give nicer averages but no one would date a literal 0)
 min_val = 1
 # Max value (if there'san improvement it will go up with time)
 max_val = 10
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 1.0
+improvement = 2.0
 # In case you are or become soo attractive that you can hit the limit
 upperCeeling = 200
 
@@ -22,27 +22,14 @@ upperCeeling = 200
 # If you don't want to do steps make steps same or bigger than population
 step = 10
 
+
 #
-# Checking inputs
+# Generating Data list
 #
 
-# If you'll getting worse with time nearly always the sooner the better
-if improvement < 1.0:
-	improvement = 1.0
+start_Time = time.time()
 
-if upperCeeling <= max_val:
-	upperCeeling = max_val
-
-if improvement == 1.0:
-
-	#
-	# Generating Data list
-	#
-
-	start_Time = time.time()
-
-	startingData = [None]*cycles
-
+startingData = [None]*cycles
 
 starting_list = list(range(min_val, max_val+1))
 print(starting_list)
@@ -66,17 +53,24 @@ if population < starting_length:
 	for i in range(cycles):
 		startingData[i] = random.sample(range(min_val, max_val), population)
 
+improvement != 1.0
 
-#if pop_diff > 0:
-	#while pop_diff != 0:
+if improvement != 1.0:
+	step  = (improvement - 1) / population
+	print(step,'step')
+	for i in startingData:
+		print(i)
+		for j in i:
+			k = j + j * step
+			if k > upperCeeling:
+				j = upperCeeling
+			if k < min_val:
+				j = min_val
+
+
 
 
 '''
-
-
-	#andom.sample(min_val, max_val, pop_diff)
-
-
 	while i < cycles:
 
 		a = [random.randint(min_val,max_val)]
