@@ -27,7 +27,7 @@ step = 10
 # Generating Data list
 #
 
-start_Time = time.time()
+#start_Time = time.time()
 
 startingData = [None]*cycles
 
@@ -42,8 +42,6 @@ if population >= starting_length:
 		startingData[i] = copy.deepcopy(starting_list)
 		random.shuffle(startingData[i])
 
-	print(startingData)
-
 	while population > starting_length:
 		for i in range(cycles):
 			startingData[i].append(random.randint(min_val, max_val))
@@ -53,19 +51,11 @@ if population < starting_length:
 	for i in range(cycles):
 		startingData[i] = random.sample(range(min_val, max_val), population)
 
-improvement != 1.0
-
 if improvement != 1.0:
 	step  = (improvement - 1) / population
-	print(step,'step')
 	for i in startingData:
+		(1 + step) * j for j in i:
 		print(i)
-		for j in i:
-			k = j + j * step
-			if k > upperCeeling:
-				j = upperCeeling
-			if k < min_val:
-				j = min_val
 
 
 
@@ -90,11 +80,11 @@ if improvement != 1.0:
 		startingData[i] = a
 		i += 1
 '''
-time_Zero = time.time()-start_Time
-print(time_Zero)
+#time_Zero = time.time()-start_Time
+#print(time_Zero)
 
 for i in startingData:
-	print(i)
+	print(i, 'final')
 
 '''
 	#
