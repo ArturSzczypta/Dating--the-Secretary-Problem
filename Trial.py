@@ -14,7 +14,7 @@ min_val = 1
 max_val = 15
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 2
+improvement = 3
 # In case you are or become soo attractive that you can hit the limit
 upperCeeling = 25
 # steps taken from max population to zero
@@ -50,15 +50,16 @@ if population < starting_length:
 	for i in range(cycles):
 		startingData[i] = random.sample(range(min_val, max_val), population)
 
+'''
 for i in startingData:
 	for j in i:
 		print('{:4d}'.format(j),end ='')
 	print()
-print()
-print()
-print('----------------------------')
-print()
-print()
+
+'''
+
+
+#multplitication = [None]*population
 
 if improvement != 1.0:
 	step  = (improvement-1) / population
@@ -66,6 +67,7 @@ if improvement != 1.0:
 		for j in range(population):
 			k = round(startingData[i][j] * (1+step*(j+1)))
 			#print(j+1,round(1+step*(j+1),2), '   \t', startingData[i][j],k,end='   ')
+			#multplitication[j] = round(1+step*(j+1),2)
 			if k > upperCeeling:
 				startingData[i][j] = upperCeeling
 			elif k < min_val:
@@ -78,10 +80,12 @@ if improvement != 1.0:
 time_Zero = time.time()-start_Time
 #print(time_Zero)
 
+'''
 for i in startingData:
 	for j in i:
 		print('{:4d}'.format(j),end ='')
 	print()
+'''
 
 '''
 	#
