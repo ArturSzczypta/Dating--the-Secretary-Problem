@@ -5,18 +5,19 @@ import time
 import os
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 10
+cycles = 100000
 # Potential dating partners
-population = 10
+population = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
 min_val = 1
 # Max value (if there'san improvement it will go up with time)
-max_val = 15
+max_val = 100
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 3
+improvement = 1
 # In case you are or become soo attractive that you can hit the limit
-upperCeeling = 25
+upperCeeling = 200
+
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
 step = 10
@@ -33,7 +34,6 @@ startingData = [None]*cycles
 starting_list = list(range(min_val, max_val+1))
 #print(starting_list)
 
-
 starting_length = len(starting_list)
 
 if population >= starting_length:
@@ -45,6 +45,7 @@ if population >= starting_length:
 		for i in range(cycles):
 			startingData[i].append(random.randint(min_val, max_val))
 		starting_length += 1
+
 
 if population < starting_length:
 	for i in range(cycles):
