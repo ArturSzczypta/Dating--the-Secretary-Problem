@@ -14,7 +14,7 @@ min_val = 1
 max_val = 100
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 1.4
+improvement = 1.0
 # In case you are or become soo attractive that you can hit the limit
 upperCeeling = 200
 
