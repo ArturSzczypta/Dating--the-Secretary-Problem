@@ -5,7 +5,7 @@ import time
 import os
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 100000
+cycles = 10000
 # Potential dating partners
 population = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
