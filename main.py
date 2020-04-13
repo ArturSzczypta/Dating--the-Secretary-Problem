@@ -5,7 +5,7 @@ import time
 import os
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 1000000
+cycles = 100000
 # Potential dating partners
 population = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
@@ -65,9 +65,9 @@ if improvement == 1.0:
 		i += 1
 
 	time_Zero = time.time()-start_Time
-	print(time_Zero)
+	#print(time_Zero)
 
-
+'''
 	#
 	# Settting up main folder and summary name
 	#
@@ -772,3 +772,4 @@ with open(file_summary_location, 'w') as f:
 	f.write('Crossing Value\n')
 	f.write(str(Option_Three_Crossing_Value) + '\n')
 	f.close()
+	'''
