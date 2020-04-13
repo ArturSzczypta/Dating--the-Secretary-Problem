@@ -11,13 +11,12 @@ population = 10
 # Min value (0 would give nicer averages but no one would date a literal 0)
 min_val = 1
 # Max value (if there'san improvement it will go up with time)
-max_val = 10
+max_val = 15
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 2.0
+improvement = 2
 # In case you are or become soo attractive that you can hit the limit
-upperCeeling = 200
-
+upperCeeling = 25
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
 step = 10
@@ -27,12 +26,12 @@ step = 10
 # Generating Data list
 #
 
-#start_Time = time.time()
+start_Time = time.time()
 
 startingData = [None]*cycles
 
 starting_list = list(range(min_val, max_val+1))
-print(starting_list)
+#print(starting_list)
 
 
 starting_length = len(starting_list)
@@ -51,40 +50,38 @@ if population < starting_length:
 	for i in range(cycles):
 		startingData[i] = random.sample(range(min_val, max_val), population)
 
+for i in startingData:
+	for j in i:
+		print('{:4d}'.format(j),end ='')
+	print()
+print()
+print()
+print('----------------------------')
+print()
+print()
+
 if improvement != 1.0:
-	step  = (improvement - 1) / population
-	for i in startingData:
-		(1 + step) * j for j in i:
-		print(i)
+	step  = (improvement-1) / population
+	for i in range(cycles):
+		for j in range(population):
+			k = round(startingData[i][j] * (1+step*(j+1)))
+			#print(j+1,round(1+step*(j+1),2), '   \t', startingData[i][j],k,end='   ')
+			if k > upperCeeling:
+				startingData[i][j] = upperCeeling
+			elif k < min_val:
+				startingData[i][j] = min_val
+			else:
+				startingData[i][j] = k
+			#print(startingData[i][j])
+		#print()
 
-
-
-
-'''
-	while i < cycles:
-
-		a = [random.randint(min_val,max_val)]
-			
-		j = 1
-		while len(a) < population:
-
-			# Calculating Max value (if no improvement then it stays the same)
-			maximal_val = int(round(max_val + max_val * (improvement-1) * j / (population-1)))
-
-			if maximal_val > upperCeeling:
-				maximal_val = upperCeeling
-
-			a.append(random.randint(min_val, maximal_val))
-			j += 1
-
-		startingData[i] = a
-		i += 1
-'''
-#time_Zero = time.time()-start_Time
+time_Zero = time.time()-start_Time
 #print(time_Zero)
 
 for i in startingData:
-	print(i, 'final')
+	for j in i:
+		print('{:4d}'.format(j),end ='')
+	print()
 
 '''
 	#
