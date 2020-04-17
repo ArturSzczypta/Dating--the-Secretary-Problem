@@ -3,6 +3,7 @@ import random
 import copy
 import time
 import os
+import csv
 
 # The higher the value the more presice the values (100000 should be ok)
 cycles = 10000
@@ -111,7 +112,7 @@ file_summary = 'Dating Summary Pop ' + str(population) + ' Cy  ' \
 + str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
 + ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + ' Step ' + str(step) + '.txt'
 
-file_summary_location  = main_folder + '\\' + file_summary
+summary  = main_folder + '\\' + file_summary
 
 
 #
@@ -139,10 +140,13 @@ time_One_List  = []
 time_Two_List  = []
 time_Three_List  = []
 
+
 population_iteration = population
 while population_iteration > 0:
 	'''
 	print('----------  ',population_iteration, '  ----------')
+	
+	steps_List.append(population_iteration)
 
 	#
 	# Settting up folder and file names
@@ -159,17 +163,9 @@ while population_iteration > 0:
 	    os.makedirs(minor_folder)
 
 
-	name_detail_One = 'Dating Detail One Pop ' + str(population_iteration) + ' Cy ' \
+	details = 'Dating Detail ' + str(population_iteration) + ' Cy ' \
 	+ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
-
-	name_detail_Two = 'Dating Detail Two Pop ' + str(population_iteration) + ' Cy ' \
-	+ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
-
-	name_detail_Three = 'Dating Detail Three Pop ' + str(population_iteration) + ' Cy ' \
-	+ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
+	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.csv'
 
 
 	file_summary = 'Dating Summary Pop ' + str(population_iteration) + ' Cy  ' \
@@ -177,31 +173,41 @@ while population_iteration > 0:
 	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
 
 
-	file_detail_One  = minor_folder + '\\' + name_detail_One
-	file_detail_Two  = minor_folder + '\\' + name_detail_Two
-	file_detail_Three  = minor_folder + '\\' + name_detail_Three
+	detail  = minor_folder + '\\' + name_detail_One
 	'''
 	time_begining = time.time()
+
+
+
 
 
 	#
 	# Option 1: Average value for each person (if no improvement all should be the same)
 	#
 
+	# Spmpress all interations into one  list
 	def main_compressor(nested_list, decimals = 2):
 		return [round(sum(x)/cycles,decimals) for x in zip(*nested_list)]
 
-
 	option_One = main_compressor(startingData)
+	print('OPTION 1', '\n', option_One)
 
+
+	def save_data(file_dir,list_name)
+		with open(file_dir, 'a') as f:
+			writer = csv.writer(f)
+			writer.writerow(list_name)
+	def free_memory(list_name)
+		list_name =  None
+		del list_name
+
+	save_data(details, option_One)
+	free_memory(option_One)
 
 	time_One_List.append(time.time() - time_begining)
 	print('time_One_List',time_One_List)
-	
-	print('OPTION 1', '\n', option_One)
-	
 
-	
+
 	#
 	# Option 2: Settle on someone better than the current one (if unlucky the last one)
 	#
@@ -237,18 +243,18 @@ while population_iteration > 0:
 
 	#Sum all cycles and then do an average
 	option_Two = main_compressor(secondaryData)
-	
-	print(option_Two, 'OPTION 2')
+	free_memory(secondaryData)
+	save_data(details, option_Two)
+	print('OPTION 2', '\n', option_Two)
 
 
-	# Getting main values of Option two 
-
+	# Getting main values of Option Two
 	Option_Two_Max_Score_Index.append(option_Two.index(max(option_Two)))
 	Option_Two_Max_Score_Value.append(max(option_Two))
 
 	time_Two_List.append(time.time() - time_One - time_begining)
 	
-	''
+	
 	#
 	# Option 3(main question): Settle with someone better than any until now (if unlucky the last one)
 	#
@@ -294,13 +300,16 @@ while population_iteration > 0:
 
 	#Sum all cycles and then do an average
 	option_Three = main_compressor(thirdData)
-
-	print(option_Three, 'OPTION 3')
+	free_memory(thirdData)
+	save_data(details, option_Three)
+	print('OPTION 3', '\n', option_Three)
 	
-	# Getting main values of Option three
+	# Getting main values of Option Three
 
 	Option_Three_Max_Score_Index.append(option_Three.index(max(option_Three)))
 	Option_Three_Max_Score_Value.append(max(option_Three))
+
+	time_Three_List.append(time.time() - time_Two - time_begining)
 
 	z = 0
 	while z < population_iteration - 1:
@@ -310,9 +319,6 @@ while population_iteration > 0:
 			Option_Three_Crossing_Value.append(option_Three[z])
 			break
 		z += 1
-
-	time_Three_List.append(time.time() - time_Two - time_begining)
-
 
 	print('-------------------------------------')
 	print('-------------------------------------')
@@ -333,24 +339,6 @@ while population_iteration > 0:
 	print('Option_Three_Max_Score_Index \n',Option_Three_Max_Score_Index)
 	print('Option_Three_Max_Score_Value \n',Option_Three_Max_Score_Value)
 
-	
-	#
-	#Saving Detailed Data
-	#
-
-	with open(file_detail_One, 'a') as f:
-		f.write(str(option_One) + '\n')
-		f.close()
-
-	with open(file_detail_Two, 'a') as f:
-		f.write(str(option_Two) + '\n')
-		f.close()
-
-	with open(file_detail_Three, 'a') as f:
-		f.write(str(option_Three) + '\n')
-		f.close()
-
-	steps_List.append(population_iteration)
 
 	population_iteration -= step
 
@@ -368,48 +356,48 @@ time_Three_List = [round(elem,5) for elem in time_Three_List]
 Option_Two_Max_Score_Value  =  [round(elem,3) for elem in Option_Two_Max_Score_Value]
 Option_Three_Max_Score_Value  = [round(elem,3) for elem in Option_Three_Max_Score_Value]
 
-with open(file_summary_location, 'w') as f:
-#Generation itself
-f.write('Generation time\n')
-f.write(str(improvement) + '\n')
-f.write('time\n')
-f.write(str(time_Zero) + '\n')
-f.write('\n')
-f.write('steps\n')
-f.write(str(steps_List) + '\n')
-f.write('\n')
+with open(summary, 'w') as f:
+	#Generation itself
+	f.write('Generation time\n')
+	f.write(str(improvement) + '\n')
+	f.write('time\n')
+	f.write(str(time_Zero) + '\n')
+	f.write('\n')
+	f.write('steps\n')
+	f.write(str(steps_List) + '\n')
+	f.write('\n')
 
-#Option One
-f.write('Option One\n')
-f.write('time\n')
-f.write(str(time_One_List) + '\n')
-f.write('\n')
+	#Option One
+	f.write('Option One\n')
+	f.write('time\n')
+	f.write(str(time_One_List) + '\n')
+	f.write('\n')
 
-#Option Two
-f.write('Option Two\n')
-f.write('time\n')
-f.write(str(time_Two_List) + '\n')
-f.write('steps\n')
-f.write(str(option_Two_Steps) + '\n')
-f.write('Max Score Index\n')
-f.write(str(Option_Two_Max_Score_Index) + '\n')
-f.write('Max Score Value\n')
-f.write(str(Option_Two_Max_Score_Value) + '\n')
-f.write('\n')
+	#Option Two
+	f.write('Option Two\n')
+	f.write('time\n')
+	f.write(str(time_Two_List) + '\n')
+	f.write('steps\n')
+	f.write(str(option_Two_Steps) + '\n')
+	f.write('Max Score Index\n')
+	f.write(str(Option_Two_Max_Score_Index) + '\n')
+	f.write('Max Score Value\n')
+	f.write(str(Option_Two_Max_Score_Value) + '\n')
+	f.write('\n')
 
-#Option Three
-f.write('Option Three\n')
-f.write('time\n')
-f.write(str(time_Three_List) + '\n')
-f.write('steps\n')
-f.write(str(option_Three_Steps) + '\n')
-f.write('Max Score Index\n')
-f.write(str(Option_Three_Max_Score_Index) + '\n')
-f.write('Max Score Value\n')
-f.write(str(Option_Three_Max_Score_Value) + '\n')
-f.write('Crossing Index\n')
-f.write(str(Option_Three_Crossing_Index) + '\n')
-f.write('Crossing Value\n')
-f.write(str(Option_Three_Crossing_Value) + '\n')
-f.close()
+	#Option Three
+	f.write('Option Three\n')
+	f.write('time\n')
+	f.write(str(time_Three_List) + '\n')
+	f.write('steps\n')
+	f.write(str(option_Three_Steps) + '\n')
+	f.write('Max Score Index\n')
+	f.write(str(Option_Three_Max_Score_Index) + '\n')
+	f.write('Max Score Value\n')
+	f.write(str(Option_Three_Max_Score_Value) + '\n')
+	f.write('Crossing Index\n')
+	f.write(str(Option_Three_Crossing_Index) + '\n')
+	f.write('Crossing Value\n')
+	f.write(str(Option_Three_Crossing_Value) + '\n')
+	f.close()
 '''
