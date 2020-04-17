@@ -63,6 +63,8 @@ for i in startingData:
 
 #multplitication = [None]*population
 
+#find all max values [i for i, x in enumerate(a) if x == max(a)]
+
 if improvement != 1.0:
 	step  = (improvement-1) / population
 	for i in range(cycles):
