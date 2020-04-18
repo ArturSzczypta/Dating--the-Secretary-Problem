@@ -6,7 +6,7 @@ import os
 import csv
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 10000
+cycles = 10
 # Potential dating partners
 population = 10
 # Min value (0 would give nicer averages but no one would date a literal 0)
@@ -15,13 +15,13 @@ min_val = 1
 max_val = 10
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 1
+improvement = 2
 # In case you are or become soo attractive that you can hit the limit
 upperCeeling = 200
 
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
-step = 100
+step = 10
 
 
 #
@@ -44,9 +44,8 @@ if population >= starting_length:
 
 	while population > starting_length:
 		for i in range(cycles):
-			startingData[i].append(random.randint(min_val, max_val))
+			startingData[i].append(random.randint(min_val, max_val-1))
 		starting_length += 1
-
 
 if population < starting_length:
 	for i in range(cycles):
@@ -66,12 +65,12 @@ for i in startingData:
 #find all max values [i for i, x in enumerate(a) if x == max(a)]
 
 if improvement != 1.0:
-	step  = (improvement-1) / population
+	change  = (improvement-1) / population
 	for i in range(cycles):
 		for j in range(population):
-			k = round(startingData[i][j] * (1+step*(j+1)))
-			#print(j+1,round(1+step*(j+1),2), '   \t', startingData[i][j],k,end='   ')
-			#multplitication[j] = round(1+step*(j+1),2)
+			k = round(startingData[i][j] * (1+change*(j+1)))
+			#print(j+1,round(1+change*(j+1),2), '   \t', startingData[i][j],k,end='   ')
+			#multplitication[j] = round(1+change*(j+1),2)
 			if k > upperCeeling:
 				startingData[i][j] = upperCeeling
 			elif k < min_val:
@@ -81,46 +80,80 @@ if improvement != 1.0:
 			#print(startingData[i][j])
 		#print()
 
+# Finding max values, if longer lists please see @martineau
+# https://stackoverflow.com/questions/3989016/how-to-find-all-positions-of-the-maximum-value-in-a-list
+max_in_cycle = [0]*cycles
+for i in range(cycles):
+	m = max(startingData[i])
+	for j in range(population) :
+		if  startingData[i][j] == m:
+			max_in_cycle[i] = j
+
+for i in startingData:
+	for j in i:
+		print('{:4d}'.format(j),end ='')
+	print()
+
+print(max_in_cycle)
+
+
+
+
 time_Zero = time.time()-start_Time
+
+
+
+
 #print(time_Zero)
 
 '''
-for i in startingData:
+for i in startingDatma:
 	for j in i:
 		print('{:4d}'.format(j),end ='')
 	print()
 '''
 
+
+
+
+
+
 '''
+
+
+
+
+
+
 #
-# Settting up main folder and summary name
+# Settting up main folder and summary file
 #
 
 folder_location = 'C:\\Users\\Artur\\Desktop\\Coding Files\\Dating Bail Out'
 
-
-main_folder_name = 'Dating Pop ' + str(population) + ' Cy ' \
+folder_name = 'Dating Pop ' + str(population) + ' Cy ' \
 + str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + ' Step ' + str(step)
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) \
++ ' Step ' + str(step)
 
-main_folder = folder_location + '\\' + main_folder_name
+this_folder = folder_location + '\\' + folder_name
 
 # Creates the folder if doesn't exists
-if not os.path.exists(main_folder):
-    os.makedirs(main_folder)
-
+if not os.path.exists(this_folder):
+    os.makedirs(this_folder)
 
 file_summary = 'Dating Summary Pop ' + str(population) + ' Cy  ' \
 + str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + ' Step ' + str(step) + '.txt'
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) \
++ ' Step ' + str(step) + '.txt'
 
-summary  = main_folder + '\\' + file_summary
+summary  = this_folder + '\\' + file_summary
 
 
 #
 # Iteration over different population sizes and saving results
 #
-'''
+
 steps_List = []
 option_Two_Steps = []
 option_Three_Steps = []
@@ -145,7 +178,7 @@ time_Three_List  = []
 
 population_iteration = population
 while population_iteration > 0:
-	'''
+	
 	print('----------  ',population_iteration, '  ----------')
 	
 	steps_List.append(population_iteration)
@@ -154,33 +187,15 @@ while population_iteration > 0:
 	# Settting up folder and file names
 	#
 
-	minor_folder_name = 'Dating Pop ' + str(population_iteration) + ' Cy ' \
+
+	detail_name = 'Dating Detail ' + str(population_iteration) + ' Cy ' \
 	+ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling)
+	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) \
+	+ ' Step ' + str(step) + '.csv'
 
-	minor_folder = main_folder + '\\' + minor_folder_name
-
-	# Creates the folder if doesn't exists
-	if not os.path.exists(minor_folder):
-	    os.makedirs(minor_folder)
-
-
-	details = 'Dating Detail ' + str(population_iteration) + ' Cy ' \
-	+ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.csv'
-
-
-	file_summary = 'Dating Summary Pop ' + str(population_iteration) + ' Cy  ' \
-	+ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
-	+ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) + '.txt'
-
-
-	detail  = minor_folder + '\\' + name_detail_One
-	'''
+	detail  = this_folder + '\\' + detail_name
+	
 	time_begining = time.time()
-
-
-
 
 
 	#
@@ -195,15 +210,15 @@ while population_iteration > 0:
 	print('OPTION 1', '\n', option_One)
 
 
-	def save_data(file_dir,list_name)
-		with open(file_dir, 'a') as f:
+	def save_data(file_dir,list_name, size):
+		with open(file_dir, 'a', newline = '') as f:
 			writer = csv.writer(f)
-			writer.writerow(list_name)
-	def free_memory(list_name)
+			writer.writerow(list_name[:size])
+	def free_memory(list_name):
 		list_name =  None
 		del list_name
 
-	save_data(details, option_One)
+	save_data(detail, option_One, population_iteration)
 	free_memory(option_One)
 
 	time_One_List.append(time.time() - time_begining)
@@ -246,7 +261,7 @@ while population_iteration > 0:
 	#Sum all cycles and then do an average
 	option_Two = main_compressor(secondaryData)
 	free_memory(secondaryData)
-	save_data(details, option_Two)
+	save_data(detail, option_Two, population_iteration)
 	print('OPTION 2', '\n', option_Two)
 
 
@@ -303,7 +318,7 @@ while population_iteration > 0:
 	#Sum all cycles and then do an average
 	option_Three = main_compressor(thirdData)
 	free_memory(thirdData)
-	save_data(details, option_Three)
+	save_data(detail, option_Three, population_iteration)
 	print('OPTION 3', '\n', option_Three)
 	
 	# Getting main values of Option Three
@@ -343,9 +358,10 @@ while population_iteration > 0:
 
 
 	population_iteration -= step
+	print(population_iteration, step, population_iteration - step)
 
 
-'''
+
 
 #
 # Round times and values
@@ -361,8 +377,6 @@ Option_Three_Max_Score_Value  = [round(elem,3) for elem in Option_Three_Max_Scor
 with open(summary, 'w') as f:
 	#Generation itself
 	f.write('Generation time\n')
-	f.write(str(improvement) + '\n')
-	f.write('time\n')
 	f.write(str(time_Zero) + '\n')
 	f.write('\n')
 	f.write('steps\n')
