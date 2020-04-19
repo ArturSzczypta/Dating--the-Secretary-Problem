@@ -84,8 +84,9 @@ if improvement != 1.0:
 # https://stackoverflow.com/questions/3989016/how-to-find-all-positions-of-the-maximum-value-in-a-list
 max_in_cycle = [0]*cycles
 for i in range(cycles):
-	m = max(startingData[i])
-	for j in range(population) :
+	m_in = startingData[i].index(max(startingData[i]))
+	m = startingData[i][m_in]
+	for j in range(m_in, population) :
 		if  startingData[i][j] == m:
 			max_in_cycle[i] = j
 
@@ -95,8 +96,6 @@ for i in startingData:
 	print()
 
 print(max_in_cycle)
-
-
 
 
 time_Zero = time.time()-start_Time
@@ -179,8 +178,8 @@ time_Three_List  = []
 population_iteration = population
 while population_iteration > 0:
 	
-	print('----------  ',population_iteration, '  ----------')
-	
+	print(str(population_iteration).center(20,'-'))
+
 	steps_List.append(population_iteration)
 
 	#
