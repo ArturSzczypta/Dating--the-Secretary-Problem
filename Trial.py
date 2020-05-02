@@ -6,22 +6,22 @@ import os
 import csv
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 10
+cycles = 1000000
 # Potential dating partners
-population = 10
+population = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
-min_val = 1
+min_val = 0
 # Max value (if there'san improvement it will go up with time)
-max_val = 10
+max_val = 100
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 2
+improvement = 1
 # In case you are or become soo attractive that you can hit the limit
-upperCeeling = 200
+upperCeeling = 199
 
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
-step = 10
+step = 100
 
 
 #
@@ -39,17 +39,22 @@ starting_length = len(starting_list)
 
 if population >= starting_length:
 	for i in range(cycles):
+		# deep copy is when you get another list not conected to the last one.
+		# without deep copy both list names would point to the same list
 		startingData[i] = copy.deepcopy(starting_list)
-		random.shuffle(startingData[i])
 
 	while population > starting_length:
 		for i in range(cycles):
-			startingData[i].append(random.randint(min_val, max_val-1))
+			startingData[i].append(random.randint(min_val, max_val+1))
 		starting_length += 1
 
 if population < starting_length:
 	for i in range(cycles):
-		startingData[i] = random.sample(range(min_val, max_val), population)
+		startingData[i] = random.sample(range(min_val, max_val+1), population)
+
+for i in range(cycles):
+		random.shuffle(startingData[i])
+
 
 '''
 for i in startingData:
@@ -82,46 +87,27 @@ if improvement != 1.0:
 
 # Finding max values, if longer lists please see @martineau
 # https://stackoverflow.com/questions/3989016/how-to-find-all-positions-of-the-maximum-value-in-a-list
-max_in_cycle = [0]*cycles
+max_cycle_ind = [0]*cycles
 for i in range(cycles):
 	m_in = startingData[i].index(max(startingData[i]))
 	m = startingData[i][m_in]
 	for j in range(m_in, population) :
 		if  startingData[i][j] == m:
-			max_in_cycle[i] = j
+			max_cycle_ind[i] = j
 
+
+'''
 for i in startingData:
 	for j in i:
 		print('{:4d}'.format(j),end ='')
 	print()
 
-print(max_in_cycle)
-
+for j in max_cycle_ind:
+		print('{:4d}'.format(j),end ='')
+print()
+'''
 
 time_Zero = time.time()-start_Time
-
-
-
-
-#print(time_Zero)
-
-'''
-for i in startingDatma:
-	for j in i:
-		print('{:4d}'.format(j),end ='')
-	print()
-'''
-
-
-
-
-
-
-'''
-
-
-
-
 
 
 #
@@ -159,9 +145,11 @@ option_Three_Steps = []
 
 Option_Two_Max_Score_Index = []
 Option_Two_Max_Score_Value = []
+Option_Two_Best_Score_Prop = []
 
 Option_Three_Max_Score_Index = []
 Option_Three_Max_Score_Value = []
+Option_Three_Best_Score_Prop = []
 
 Option_Three_Crossing_Index = []
 Option_Three_Crossing_Value = []
@@ -201,7 +189,7 @@ while population_iteration > 0:
 	# Option 1: Average value for each person (if no improvement all should be the same)
 	#
 
-	# Spmpress all interations into one  list
+	# Compress all interations into one  list
 	def main_compressor(nested_list, decimals = 2):
 		return [round(sum(x)/cycles,decimals) for x in zip(*nested_list)]
 
@@ -221,7 +209,7 @@ while population_iteration > 0:
 	free_memory(option_One)
 
 	time_One_List.append(time.time() - time_begining)
-	print('time_One_List',time_One_List)
+	#print('time_One_List',time_One_List)
 
 
 	#
@@ -232,37 +220,57 @@ while population_iteration > 0:
 	#Creating new one
 	option_Two_Steps.append(0)
 
-	# deep copy is when you get another list not conected to the last one.
-	# without deep copy both list names would point to the same list
 	secondaryData = copy.deepcopy(startingData)
 
-	m = 0
-	while m < cycles:
-		n = 0
+	for m in range(cycles):
 
 		#not touching last one (nowhere to go)
-		while n < population_iteration -1:
-
-			p = 1
-			while secondaryData[m][n] >= secondaryData[m][n + p]:
-
-				if n + p == population_iteration - 1:
-					break
-				p += 1
+		
+		for n in range(population_iteration-1):
 			
-			secondaryData[m][n] = secondaryData[m][n + p]
-			option_Two_Steps[-1] = option_Two_Steps[-1] + p
+			if n == max_cycle_ind[m]:
+				secondaryData[m][n] = startingData[m][population_iteration-1]
+				option_Two_Steps[-1] += population_iteration-1 - n
+				
+			else:
+				p = 1
+				while startingData[m][n] >= startingData[m][n + p]:
+					if n + p == population_iteration - 1:
+						break
+					p += 1
 
-			n += 1
+				secondaryData[m][n] = startingData[m][n + p]
+				#print(n,p)
+				option_Two_Steps[-1] += p
 		#print(secondaryData[m])
-		m += 1
+		
+
 
 	#Sum all cycles and then do an average
 	option_Two = main_compressor(secondaryData)
+
+	#How often fo you get the best value
+	def best_score_finder(nested_list, decimals = 4):
+		result = [0]*population_iteration
+		for i in range(cycles):
+			for j in range(population_iteration):
+				if nested_list[i][j] == max(nested_list[i]):
+					result[j] += 1
+		return [round(x*100/sum(result),decimals) for x in result]
+
+	Option_Two_Best_Score_Prop = best_score_finder(secondaryData)
+	
+
 	free_memory(secondaryData)
 	save_data(detail, option_Two, population_iteration)
 	print('OPTION 2', '\n', option_Two)
-
+	print('------------')
+	print()
+	print('prop',Option_Two_Best_Score_Prop)
+	print(sum(Option_Two_Best_Score_Prop))
+	print(Option_Two_Best_Score_Prop.index(max(Option_Two_Best_Score_Prop)))
+	print()
+	print('------------')
 
 	# Getting main values of Option Two
 	Option_Two_Max_Score_Index.append(option_Two.index(max(option_Two)))
@@ -278,47 +286,66 @@ while population_iteration > 0:
 	
 	option_Three_Steps.append(0)
 
-	# deep copy is when you get another list not conected to the last one.
-	# without deep copy both list names would point to the same list 
 	thirdData = copy.deepcopy(startingData)
 
 
-	m = 0
-	while m < cycles:
-		n = 0
+	
+	for m in range(cycles):
 		q = 0
 		maxPop = 0
 		#print(startingData[m])
 		#not touching last one (nowhere to go)
-		while n < population_iteration -1:
-			#before looping get highest value until n
-			while q <= n:
-				if maxPop < startingData[m][q]:
-					maxPop = startingData[m][q]
-				q += 1
-			p = 1
-			while maxPop >= startingData[m][n + p]:
+		for n in range(population_iteration-1):
 
-				if n + p == population_iteration - 1:
-					break
-				p += 1
+			if n >= max_cycle_ind[m]:
+				thirdData[m][n] = startingData[m][population_iteration-1]
+				option_Three_Steps[-1] += population_iteration-1 - n
+			else:
 
-			thirdData[m][n] = thirdData[m][n + p]
-			option_Three_Steps[-1] = option_Three_Steps[-1] + p
+				#before looping get highest value until n
+				while q <= n:
+					if maxPop < startingData[m][q]:
+						maxPop = startingData[m][q]
+					q += 1
+				
+				p = 1
 
-			#print(m, n, maxPop, p, q, thirdData[m][n], option_Three_Steps, 'after')
-			n += 1
+				while maxPop >= startingData[m][n + p]:
 
-		#print(thirdData[m])
-		#print('---')
-		m += 1
-	#print('-------------------------------------')
+					if n + p == population_iteration - 1:
+						break
+					p += 1
+
+				thirdData[m][n] = startingData[m][n + p]
+				option_Three_Steps[-1] += p
+
+				#print(m, n, maxPop, p, q, thirdData[m][n], option_Three_Steps, 'after')
+
+	'''for i in thirdData:
+						for j in i:
+							print('{:4d}'.format(j),end ='')
+						print()'''
+
 
 	#Sum all cycles and then do an average
+	#print(thirdData)
 	option_Three = main_compressor(thirdData)
+
+	Option_Three_Best_Score_Prop = best_score_finder(thirdData)
+
 	free_memory(thirdData)
 	save_data(detail, option_Three, population_iteration)
 	print('OPTION 3', '\n', option_Three)
+
+	print('------------')
+	print()
+	print('prop',Option_Three_Best_Score_Prop)
+	print(sum(Option_Three_Best_Score_Prop))
+	print(Option_Three_Best_Score_Prop.index(max(Option_Three_Best_Score_Prop)))
+	print()
+	print('------------')
+
+
 	
 	# Getting main values of Option Three
 
@@ -331,11 +358,20 @@ while population_iteration > 0:
 	while z < population_iteration - 1:
 		if option_Two[z] > option_Three[z]:
 			
-			Option_Three_Crossing_Index.append(z)
-			Option_Three_Crossing_Value.append(option_Three[z])
+			option_Three_Crossing_Index.append(z)
+			option_Three_Crossing_Value.append(option_Three[z])
 			break
 		z += 1
 
+	z = 0
+	while z < population_iteration - 1:
+		if option_Two_Best_Score_Prop[z] > option_Three_Best_Score_Prop[z]:
+			
+			best_Crossing_Index.append(z)
+			best_Crossing_Value.append(option_Three[z])
+			break
+		z += 1
+	
 	print('-------------------------------------')
 	print('-------------------------------------')
 	print('-------------------------------------')
@@ -348,16 +384,16 @@ while population_iteration > 0:
 	print('time_One_List \n',time_One_List)
 	print('time_Two_List \n',time_Two_List)
 	print('time_Three_List \n',time_Three_List)
+	
+	print('Option_Two_Max_Score_Index \n',option_Two_Max_Score_Index)
+	print('Option_Two_Max_Score_Value \n',option_Two_Max_Score_Value)
 
-	print('Option_Two_Max_Score_Index \n',Option_Two_Max_Score_Index)
-	print('Option_Two_Max_Score_Value \n',Option_Two_Max_Score_Value)
+	print('Option_Three_Max_Score_Index \n',option_Three_Max_Score_Index)
+	print('Option_Three_Max_Score_Value \n',option_Three_Max_Score_Value)
 
-	print('Option_Three_Max_Score_Index \n',Option_Three_Max_Score_Index)
-	print('Option_Three_Max_Score_Value \n',Option_Three_Max_Score_Value)
-
-
+	
 	population_iteration -= step
-	print(population_iteration, step, population_iteration - step)
+	#print(population_iteration, step, population_iteration - step)
 
 
 
@@ -370,8 +406,8 @@ time_One_List = [round(elem,5) for elem in time_One_List]
 time_Two_List = [round(elem,5) for elem in time_Two_List]
 time_Three_List = [round(elem,5) for elem in time_Three_List]
 
-Option_Two_Max_Score_Value  =  [round(elem,3) for elem in Option_Two_Max_Score_Value]
-Option_Three_Max_Score_Value  = [round(elem,3) for elem in Option_Three_Max_Score_Value]
+option_Two_Max_Score_Value  =  [round(elem,3) for elem in option_Two_Max_Score_Value]
+option_Three_Max_Score_Value  = [round(elem,3) for elem in option_Three_Max_Score_Value]
 
 with open(summary, 'w') as f:
 	#Generation itself
@@ -395,9 +431,15 @@ with open(summary, 'w') as f:
 	f.write('steps\n')
 	f.write(str(option_Two_Steps) + '\n')
 	f.write('Max Score Index\n')
-	f.write(str(Option_Two_Max_Score_Index) + '\n')
+	f.write(str(option_Two_Max_Score_Index) + '\n')
 	f.write('Max Score Value\n')
-	f.write(str(Option_Two_Max_Score_Value) + '\n')
+	f.write(str(option_Two_Max_Score_Value) + '\n')
+	f.write('Best Score Index\n')
+	f.write(str(option_Two_Max_Score_Value) + '\n')
+	f.write('Best Score Value\n')
+	f.write(str(option_Two_Max_Score_Value) + '\n')
+
+
 	f.write('\n')
 
 	#Option Three
@@ -407,12 +449,15 @@ with open(summary, 'w') as f:
 	f.write('steps\n')
 	f.write(str(option_Three_Steps) + '\n')
 	f.write('Max Score Index\n')
-	f.write(str(Option_Three_Max_Score_Index) + '\n')
+	f.write(str(option_Three_Max_Score_Index) + '\n')
 	f.write('Max Score Value\n')
-	f.write(str(Option_Three_Max_Score_Value) + '\n')
+	f.write(str(option_Three_Max_Score_Value) + '\n')
 	f.write('Crossing Index\n')
-	f.write(str(Option_Three_Crossing_Index) + '\n')
+	f.write(str(options_Crossing_Index) + '\n')
 	f.write('Crossing Value\n')
-	f.write(str(Option_Three_Crossing_Value) + '\n')
+	f.write(str(options_Crossing_Value) + '\n')
+	f.write('Crossing Index\n')
+	f.write(str(options_Crossing_Index) + '\n')
+	f.write('Crossing Value\n')
+	f.write(str(options_Crossing_Value) + '\n')
 	f.close()
-'''
