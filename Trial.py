@@ -151,8 +151,11 @@ Option_Three_Max_Score_Index = []
 Option_Three_Max_Score_Value = []
 Option_Three_Best_Score_Prop = []
 
-Option_Three_Crossing_Index = []
-Option_Three_Crossing_Value = []
+Option_Three_Crossing_Index = 0
+Option_Three_Crossing_Value = 0
+
+best_Crossing_Index  = 0
+best_Crossing_Value = 0
 
 time_One = 0
 time_Two = 0
@@ -358,8 +361,8 @@ while population_iteration > 0:
 	while z < population_iteration - 1:
 		if option_Two[z] > option_Three[z]:
 			
-			option_Three_Crossing_Index.append(z)
-			option_Three_Crossing_Value.append(option_Three[z])
+			option_Three_Crossing_Index =z
+			option_Three_Crossing_Value= option_Three[z]
 			break
 		z += 1
 
@@ -367,8 +370,8 @@ while population_iteration > 0:
 	while z < population_iteration - 1:
 		if option_Two_Best_Score_Prop[z] > option_Three_Best_Score_Prop[z]:
 			
-			best_Crossing_Index.append(z)
-			best_Crossing_Value.append(option_Three[z])
+			best_Crossing_Index = z
+			best_Crossing_Value.append = option_Three_Best_Score_Prop[z]
 			break
 		z += 1
 	
@@ -456,8 +459,12 @@ with open(summary, 'w') as f:
 	f.write(str(options_Crossing_Index) + '\n')
 	f.write('Crossing Value\n')
 	f.write(str(options_Crossing_Value) + '\n')
+	f.write('Best Score Index\n')
+	f.write(str(option_Three_Max_Score_Value) + '\n')
+	f.write('Best Score Value\n')
+	f.write(str(best_Three_Max_Score_Value) + '\n')
 	f.write('Crossing Index\n')
-	f.write(str(options_Crossing_Index) + '\n')
+	f.write(str(best_Crossing_Index) + '\n')
 	f.write('Crossing Value\n')
 	f.write(str(options_Crossing_Value) + '\n')
 	f.close()
