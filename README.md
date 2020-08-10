@@ -3,7 +3,7 @@ Inspired by Hannah Fry's TED talk about love.
 
 I was curious is it really the case that if it was just statistics you should dump first 37% of partners and then stick tothe first best one so far. The next question waswhathappens when there's an improvement (increase in attractiveness)
 
-
+After failed attempt using Python lists (the final values were wrong) I decided to use Numpy
 
 I've taken into account 3 options in approaching the issue:
 Option 1. Average score (if there's noimprovement should stay flat

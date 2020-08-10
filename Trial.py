@@ -6,13 +6,13 @@ import os
 import csv
 
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 1000000
+cycles = 10000
 # Potential dating partners
 population = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
 min_val = 0
 # Max value (if there'san improvement it will go up with time)
-max_val = 100
+max_val = 99
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
 improvement = 1
@@ -143,16 +143,16 @@ steps_List = []
 option_Two_Steps = []
 option_Three_Steps = []
 
-Option_Two_Max_Score_Index = []
-Option_Two_Max_Score_Value = []
-Option_Two_Best_Score_Prop = []
+option_Two_Max_Score_Index = []
+option_Two_Max_Score_Value = []
+option_Two_Best_Score_Prop = []
 
-Option_Three_Max_Score_Index = []
-Option_Three_Max_Score_Value = []
-Option_Three_Best_Score_Prop = []
+option_Three_Max_Score_Index = []
+option_Three_Max_Score_Value = []
+option_Three_Best_Score_Prop = []
 
-Option_Three_Crossing_Index = 0
-Option_Three_Crossing_Value = 0
+option_Three_Crossing_Index = 0
+option_Three_Crossing_Value = 0
 
 best_Crossing_Index  = 0
 best_Crossing_Value = 0
@@ -185,6 +185,7 @@ while population_iteration > 0:
 
 	detail  = this_folder + '\\' + detail_name
 	
+	
 	time_begining = time.time()
 
 
@@ -200,16 +201,22 @@ while population_iteration > 0:
 	print('OPTION 1', '\n', option_One)
 
 
-	def save_data(file_dir,list_name, size):
-		with open(file_dir, 'a', newline = '') as f:
+	def save_data(file_d, list_name, size):
+		with open(file_d, 'a', newline = '') as f:
 			writer = csv.writer(f)
 			writer.writerow(list_name[:size])
 	def free_memory(list_name):
 		list_name =  None
 		del list_name
 
-	save_data(detail, option_One, population_iteration)
-	free_memory(option_One)
+
+	print(option_One[:population_iteration])
+	#save_data(detail, option_One, population_iteration)
+	'''with open(detail, 'a', newline = '') as f:
+						writer = csv.writer(f)
+						writer.writerow(option_One[:population_iteration])
+			
+				free_memory(option_One)'''
 
 	time_One_List.append(time.time() - time_begining)
 	#print('time_One_List',time_One_List)
@@ -261,7 +268,7 @@ while population_iteration > 0:
 					result[j] += 1
 		return [round(x*100/sum(result),decimals) for x in result]
 
-	Option_Two_Best_Score_Prop = best_score_finder(secondaryData)
+	option_Two_Best_Score_Prop = best_score_finder(secondaryData)
 	
 
 	free_memory(secondaryData)
@@ -269,15 +276,15 @@ while population_iteration > 0:
 	print('OPTION 2', '\n', option_Two)
 	print('------------')
 	print()
-	print('prop',Option_Two_Best_Score_Prop)
-	print(sum(Option_Two_Best_Score_Prop))
-	print(Option_Two_Best_Score_Prop.index(max(Option_Two_Best_Score_Prop)))
+	print('max_perc_2',option_Two_Best_Score_Prop)
+	print(sum(option_Two_Best_Score_Prop))
+	print(option_Two_Best_Score_Prop.index(max(option_Two_Best_Score_Prop)))
 	print()
 	print('------------')
 
 	# Getting main values of Option Two
-	Option_Two_Max_Score_Index.append(option_Two.index(max(option_Two)))
-	Option_Two_Max_Score_Value.append(max(option_Two))
+	option_Two_Max_Score_Index.append(option_Two.index(max(option_Two)))
+	option_Two_Max_Score_Value.append(max(option_Two))
 
 	time_Two_List.append(time.time() - time_One - time_begining)
 	
@@ -334,7 +341,7 @@ while population_iteration > 0:
 	#print(thirdData)
 	option_Three = main_compressor(thirdData)
 
-	Option_Three_Best_Score_Prop = best_score_finder(thirdData)
+	option_Three_Best_Score_Prop = best_score_finder(thirdData)
 
 	free_memory(thirdData)
 	save_data(detail, option_Three, population_iteration)
@@ -342,9 +349,9 @@ while population_iteration > 0:
 
 	print('------------')
 	print()
-	print('prop',Option_Three_Best_Score_Prop)
-	print(sum(Option_Three_Best_Score_Prop))
-	print(Option_Three_Best_Score_Prop.index(max(Option_Three_Best_Score_Prop)))
+	print('max_perc_3',option_Three_Best_Score_Prop)
+	print(sum(option_Three_Best_Score_Prop))
+	print(option_Three_Best_Score_Prop.index(max(option_Three_Best_Score_Prop)))
 	print()
 	print('------------')
 
@@ -352,8 +359,8 @@ while population_iteration > 0:
 	
 	# Getting main values of Option Three
 
-	Option_Three_Max_Score_Index.append(option_Three.index(max(option_Three)))
-	Option_Three_Max_Score_Value.append(max(option_Three))
+	option_Three_Max_Score_Index.append(option_Three.index(max(option_Three)))
+	option_Three_Max_Score_Value.append(max(option_Three))
 
 	time_Three_List.append(time.time() - time_Two - time_begining)
 
@@ -371,10 +378,11 @@ while population_iteration > 0:
 		if option_Two_Best_Score_Prop[z] > option_Three_Best_Score_Prop[z]:
 			
 			best_Crossing_Index = z
-			best_Crossing_Value.append = option_Three_Best_Score_Prop[z]
+			best_Crossing_Value = option_Three_Best_Score_Prop[z]
 			break
 		z += 1
-	
+	print('crossing', best_Crossing_Index, best_Crossing_Value)
+
 	print('-------------------------------------')
 	print('-------------------------------------')
 	print('-------------------------------------')
@@ -437,10 +445,8 @@ with open(summary, 'w') as f:
 	f.write(str(option_Two_Max_Score_Index) + '\n')
 	f.write('Max Score Value\n')
 	f.write(str(option_Two_Max_Score_Value) + '\n')
-	f.write('Best Score Index\n')
-	f.write(str(option_Two_Max_Score_Value) + '\n')
-	f.write('Best Score Value\n')
-	f.write(str(option_Two_Max_Score_Value) + '\n')
+	f.write('Best Score Propability\n')
+	f.write(str(option_Two_Best_Score_Prop) + '\n')
 
 
 	f.write('\n')
@@ -455,16 +461,12 @@ with open(summary, 'w') as f:
 	f.write(str(option_Three_Max_Score_Index) + '\n')
 	f.write('Max Score Value\n')
 	f.write(str(option_Three_Max_Score_Value) + '\n')
-	f.write('Crossing Index\n')
-	f.write(str(options_Crossing_Index) + '\n')
-	f.write('Crossing Value\n')
-	f.write(str(options_Crossing_Value) + '\n')
-	f.write('Best Score Index\n')
-	f.write(str(option_Three_Max_Score_Value) + '\n')
-	f.write('Best Score Value\n')
-	f.write(str(best_Three_Max_Score_Value) + '\n')
+	f.write('Best Score Propability\n')
+	f.write(str(option_Three_Best_Score_Prop) + '\n')
+
 	f.write('Crossing Index\n')
 	f.write(str(best_Crossing_Index) + '\n')
 	f.write('Crossing Value\n')
-	f.write(str(options_Crossing_Value) + '\n')
+	f.write(str(best_Crossing_Value) + '\n')
+
 	f.close()

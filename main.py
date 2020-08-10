@@ -4,8 +4,20 @@ import copy
 import time
 import os
 
+import numpy as np
+import itertools
+import math
+import pandas as pd
+
+#Based on example:
+#https://imrankhan17.github.io/pages/Solving%20the%20secretary%20problem%20with%20Python.html
+
+#
+# Inputs
+#
+
 # The higher the value the more presice the values (100000 should be ok)
-cycles = 10000
+cycles = 100
 # Potential dating partners
 population = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
@@ -14,26 +26,252 @@ min_val = 1
 max_val = 100
 
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% improvement)
-improvement = 1.0
+improvement = 1
 # In case you are or become soo attractive that you can hit the limit
 upperCeeling = 200
+# In case it gets only worse
+bedrock = 0
 
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
 step = 10
 
+
+#
+# Variables
+#
+
+filler = np.empty(1)
+increm = np.empty(1)
+value_at_95 = 0
+value_at_90 = 0
+value_at_80 = 0
+
+#Baseline
+baseline_total = np.zeros(population)
+baseline_best = np.zeros(population)
+
+
+#Results
+total = np.zeros(population)
+the_best = np.zeros(population)
+top_95 = np.zeros(population)
+top_90 = np.zeros(population)
+top_80 = np.zeros(population)
+
+# Saving
+header = np.arange(1,population+1)
+
+
 #
 # Checking inputs
 #
 
-# If you'll getting worse with time nearly always the sooner the better
-if improvement < 1.0:
-	improvement = 1.0
+if improvement != 1:
+	increm = np.linspace(1,improvement,endpoint=True,num=population)
+	np.around(increm,decimals=round(math.log(population,10)+2),out=increm)
+	#print(increm)
+	#print(math.log(population,10))
 
 if upperCeeling <= max_val:
 	upperCeeling = max_val
 
+
+#
+# Generating single array
+#
+
+start = time.time()
+current  = time.time()
+diff = time.time()
+printed =  False
+
+#
+# Single array
+#
+
+
+for k in range(cycles):
+	#Get the desired population regardless based on given min and max
+	if max_val - min_val == population:
+		filler = np.arange(min_val,max_val+1)
+	elif max_val - min_val > population:
+		filler  = np.arange(min_val,population+min_val)
+	else:
+		filler = np.arange(min_val,max_val+1)
+		extra = np.random.randint(min_val,high=max_val,size=population-filler.shape[0])
+		filler = np.concatenate([filler,extra])
+
+	np.random.shuffle(filler)
+
+	# recalculate for improvement
+	if improvement != 1:
+		filler = filler*increm
+		if max_val * improvement > upperCeeling:
+			filler[filler > upperCeeling] = upperCeeling
+		if max_val * improvement < bedrock:
+			filler[filler < bedrock] = bedrock
+		np.around(filler,decimals=0,out=filler)
+
+	#95%, 90%, 80%
+	value_at_95 = math.ceil((np.amax(filler)-np.amin(filler))*0.95)
+	value_at_90 = math.ceil((np.amax(filler)-np.amin(filler))*0.90)
+	value_at_80 = math.ceil((np.amax(filler)-np.amin(filler))*0.80)
+
+
+	# Baseline 
+	np.add(baseline_total,filler, out=baseline_total)
+	baseline_best[np.argmax(filler)] += 1
+
+	#Comparing to the best so far
+
+	for i in range(population-1):
+		
+		# If max value was already seen skip the comparison
+		if np.amax(filler[:i+1]) >= np.amax(filler):
+			total[i] += filler[-1]
+
+		else:
+			x = np.argmax(filler[i:] > np.amax(filler[:i+1])) + i
+			total[i] += filler[x]
+
+			#Filling target values
+			if filler[x] == np.amax(filler):
+				the_best[i] += 1
+			elif filler[x] >= value_at_95:
+				top_95[i] += 1
+			elif filler[x] >= value_at_90:
+				top_90[i] += 1
+			elif filler[x] >= value_at_80:
+				top_80[i] += 1
+
+	#Evaluating last position
+	total[-1] += filler[-1]
+	if filler[-1] == np.amax(filler):
+		the_best[-1] += 1
+
+
+	#shows progress and time left
+	if k % (cycles/100)  == 0  and k/cycles*100 >= 1:
+		print(k/cycles*100,' %')
+
+		if printed == False:
+
+			current = time.time()
+			diff = (current - start)*(100-(k/cycles*100)/(k/cycles*100))
+
+			# https://stackoverflow.com/a/27780763/55311220
+			#per %
+			hours, rem = divmod(diff/100, 3600)
+			minutes, seconds = divmod(rem, 60)
+			print('Time given: hr:min:sec.')
+			print('1% Takes '"{:0>2}:{:0>2}:{:05.1f}".format(int(hours),int(minutes),seconds))
+			printed = True
+
+			#Untill Ready
+			hours, rem = divmod(diff, 3600)
+			minutes, seconds = divmod(rem, 60)
+			print('Remaining: '"{:0>2}:{:0>2}:{:05.1f}".format(int(hours),int(minutes),seconds))
+			printed = True
+
+
+
+
+np.set_printoptions(precision=2, suppress = True)
+print(baseline_total/cycles/population*100)
+print('-----------------------------')
+print(baseline_best/cycles*100)
+print('-----------------------------')
+print('-----------------------------')
+print('-----------------------------')
+print('tot: ', total/cycles/population*100)
+print('-----------------------------')
+print('best: ', the_best/cycles*100)
+print('-----------------------------')
+print('95: ', top_95/cycles*100)
+print('-----------------------------')
+print('90: ', top_90/cycles*100)
+print('-----------------------------')
+print('80: ', top_80/cycles*100)
+print('-----------------------------')
+
+
+#
+# Saving Data
+#
+
+finished = np.column_stack((baseline_total/cycles/population*100,
+	baseline_best/cycles*100, 
+	total/cycles/population*100,
+	the_best/cycles*100,
+	top_95/cycles*100,
+	top_90/cycles*100,
+	top_80/cycles*100))
+
+# https://stackoverflow.com/a/11146434/5531122
+
+names  = ['baseline_total', 'baseline_best', 'total',
+	'the_best', 'top_95', 'top_90', 'top_80']
+
+df = pd.DataFrame(finished, columns=names)
+#https://stackoverflow.com/a/20168394/5531122
+df.index = np.arange(1, len(df)+1)
+df.to_csv('df.csv', index=True, header=True, sep=' ')	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# Option 1 Best than the last one, no going back
+#
+
+
+
+
+
+
+
+#baseline = filler.sum(axis=0)/cycles
+#print(one_total/np.sum(one_total))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+
 if improvement == 1.0:
+	startingData = np.arange
+
+
+
+
+
+
+
+
 
 	#
 	# Generating Data list
@@ -772,4 +1010,4 @@ with open(file_summary_location, 'w') as f:
 	f.write('Crossing Value\n')
 	f.write(str(Option_Three_Crossing_Value) + '\n')
 	f.close()
-	'''
+'''
