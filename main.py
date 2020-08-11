@@ -3,6 +3,7 @@ import random
 import copy
 import time
 import os
+import sys
 
 import numpy as np
 import itertools
@@ -35,6 +36,23 @@ bedrock = 0
 # steps taken from max population to zero
 # If you don't want to do steps make steps same or bigger than population
 step = 10
+
+result_folder = os.getcwd() + '\\Results'
+
+if not os.path.exists(result_folder):
+	os.makedirs(result_folder)
+
+os.chdir(result_folder)
+
+
+test_name = 'Pop ' + str(population) + ' Cy ' \
++ str(cycles) + ' Min ' + str(min_val) + ' Max ' + str(max_val) \
++ ' Imp ' + str(improvement) + ' Upper ' + str(upperCeeling) \
++ ' Bottom ' + str(bedrock)+ '.csv'
+
+#https://stackoverflow.com/a/179608/5531122
+if os.path.isfile(test_name):
+	sys.exit('Already Genarated')
 
 
 #
@@ -200,7 +218,8 @@ print('-----------------------------')
 # Saving Data
 #
 
-finished = np.column_stack((baseline_total/cycles/population*100,
+finished = np.column_stack((
+	baseline_total/cycles/population*100,
 	baseline_best/cycles*100, 
 	total/cycles/population*100,
 	the_best/cycles*100,
@@ -216,7 +235,7 @@ names  = ['baseline_total', 'baseline_best', 'total',
 df = pd.DataFrame(finished, columns=names)
 #https://stackoverflow.com/a/20168394/5531122
 df.index = np.arange(1, len(df)+1)
-df.to_csv('df.csv', index=True, header=True, sep=' ')	
+df.to_csv(test_name, index=True, header=True, sep=' ')	
 
 
 
