@@ -1,9 +1,16 @@
 # Dating - the Secretary Problem
 Inspired by Hannah Fry's TED talk about love.
 
+Statistically, to choose the best option, one schould reject about 37% of the given set, and then choose first option better than any so far. The chance of picking the best option is set is about 37%. Asumption is that there is only one chance to accept or reject. Worst case scenario is rejecting everyone and then taking the last option, hoping it is better than average.
+
 Wiki: https://en.wikipedia.org/wiki/Secretary_problem
 
-I was curious is it really the case that if it was just statistics you should reject first 37% of partners and then stick to the first best one so far. The next question was what happens when there's an improvement (increase in attractiveness).
+Questions I had:
+1. When schould a person stop looking if they aim for the best option in set, what is the propability
+2. When schould a person stop looking if they want to choose statistically best option, what is the propability
+3. How the results above change, if we are comfortable of choosing any option from top 80%, 90% or 95%
+4. How the results change, if there is a marginall improvement with time in the quality of options, 2%, 5% or 10%
+5. 
 
 There are two folder for two approaches: 'single core' and 'multithreading'.
 Each 'main.py' creates a .csv file in 'Results' folder. File name specifies all variables used.
@@ -17,4 +24,4 @@ I've benchmarked 'single core' and 'multithreading' after going offline and stop
 
 The benchmark data stops in different places, because:
  - single core: Arbitrary run time cutoff at 40 min.
- - multithreading: When script crasched because of running out of RAM
+ - multiprocessing: When script crasched when it runned out of RAM
