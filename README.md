@@ -1,5 +1,6 @@
 # Dating - the Secretary Problem
 Inspired by Hannah Fry's TED talk about love.
+
 Wiki: https://en.wikipedia.org/wiki/Secretary_problem
 
 I was curious is it really the case that if it was just statistics you should reject first 37% of partners and then stick to the first best one so far. The next question was what happens when there's an improvement (increase in attractiveness).
