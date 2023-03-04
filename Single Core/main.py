@@ -182,3 +182,6 @@ df = pd.DataFrame(finished, columns=names)
 # https://stackoverflow.com/a/20168394/5531122
 df.index = np.arange(1, len(df)+1)
 df.to_csv(test_name, index=True, header=True, sep=' ')
+
+if __name__== "__main__":
+

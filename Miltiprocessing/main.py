@@ -65,7 +65,9 @@ if upperCeeling <= max_val:
 
 
 def single_run(k):
-	#Get the desired population regardless based on given min and max
+	'''
+	Get the desired population regardless based on given min and max
+	'''
 	if max_val - min_val == population:
 		filler = np.arange(min_val,max_val+1)
 	elif max_val - min_val > population:
@@ -86,12 +88,14 @@ def single_run(k):
 			filler[filler < bedrock] = bedrock
 		np.around(filler,decimals=0,out=filler)
 		
-	#95%, 90%, 80%
+		# print(filler)
+        #filler = filler.astype(int)
+        # print(filler)
+		
+	# Values for Top 95%, 90%, 80% of partners
 	value_at_95 = (np.amax(filler)-np.amin(filler)+1)*0.95
 	value_at_90 = (np.amax(filler)-np.amin(filler)+1)*0.90
 	value_at_80 = (np.amax(filler)-np.amin(filler)+1)*0.80
-	#print(value_at_95, value_at_90, value_at_80)
-	#print('--------------')
 	
 	#print(filler)
 	result  = np.zeros((7,population))
@@ -141,8 +145,7 @@ def single_run(k):
 		lock = mp.Lock()
 		with lock:
 			first_ten.value += 1
-		#print(first_ten.value)
-
+		
 		if first_ten.value == 10:
 
 			now = time.time() - time0
