@@ -53,7 +53,8 @@ if MAX_VAL_LIMIT <= MAX_VAL:
     MAX_VAL_LIMIT = MAX_VAL
 
 
-def single_run() -> np.ndarray:
+def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
+               MIN_VAL_LIMIT: int, MAX_VAL_LIMIT: int) -> np.ndarray:
     '''Generates a single run of the simulation'''
     if MAX_VAL - MIN_VAL == POPULATION:
         filler = np.arange(MIN_VAL, MAX_VAL + 1)
@@ -126,6 +127,13 @@ def single_run() -> np.ndarray:
     result[2][-1] = filler[-1]
     if filler[-1] == np.amax(filler):
         result[3][-1] += 1
+    return result
+'''
+def multiprocessing(num_cores: int, function: callable) ->
+
+
+
+
 
     if first_ten.value < 10:
         lock = mp.Lock()
@@ -154,15 +162,15 @@ def single_run() -> np.ndarray:
 
             # https://stackoverflow.com/a/367065/5531122
             sys.stdout.flush()
-    return result
-
+'''
 
 if __name__ == "__main__":
     time0 = time.time()
     finished = np.zeros((7, POPULATION))
 
     pool = mp.Pool()
-    results = pool.map(single_run, range(CYCLES))
+    results = pool.map(single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
+                                  MIN_VAL_LIMIT, MAX_VAL_LIMIT), range(CYCLES))
     pool.close()
     pool.join()
 
