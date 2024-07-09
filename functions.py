@@ -2,6 +2,9 @@
 First script created, so I decided to leave hyperlinks to the sources'''
 import multiprocessing as mp
 import numpy as np
+import logging
+from pathlib import Path
+import logging_function as l_f
 
 import math
 import time
@@ -10,35 +13,48 @@ import sys
 
 import pandas as pd
 
+current_file_name = Path(__file__).stem
+log_file_name = f'{current_file_name}_log.log'
+
+BASE_DIR = Path(__file__).parent
+LOGGING_FILE = BASE_DIR / 'logging_files' / log_file_name
+LOGGING_JSON = BASE_DIR / 'logging_files' / 'logging_config.json'
+
+l_f.configure_logging(LOGGING_JSON, LOGGING_FILE)
+
+
+
 time0 = time.time()
 
 # How many times to run the simulation
-CYCLES = 100000
+CYCLES = 1000
 # Potential dating partners
-POPULATION = 1000
+POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
 MIN_VAL = 1
 # Max value (if there'san improvement it will go up with time)
-MAX_VAL = 1000
+MAX_VAL = 200
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% impr.)
 IMPROVEMENT = 1.1
 # In case you are or become soo attractive that you can hit the limit
-MAX_VAL_LIMIT = 20000
+MAX_VAL_LIMIT = 200
 # In case it gets only worse
 MIN_VAL_LIMIT = 0
 
+multiprocess =  True
+if multiprocess:
+    logging.info(f'Number of cores: {mp.cpu_count()}')
+    # For time estimate
+    first_ten = mp.Value('i', 0)
 
-# For time estimate
-first_ten = mp.Value('i', 0)
+result_folder = Path.cwd() / 'Results'
 
-result_folder = os.getcwd() + '\\Results'
-
-if not os.path.exists(result_folder):
-    os.makedirs(result_folder)
+if not result_folder.exists():
+    result_folder.mkdir(parents=True)
 os.chdir(result_folder)
 
-test_name = f'pop {POPULATION} cy {CYCLES} min {MIN_VAL} max {MAX_VAL}' \
-            f' imp {IMPROVEMENT} upper {MAX_VAL_LIMIT} bottom {MIN_VAL_LIMIT}.csv'
+test_name = f'pop {POPULATION} cy {CYCLES} imp {IMPROVEMENT} min {MIN_VAL} ' \
+            f'max {MAX_VAL} upper {MAX_VAL_LIMIT} bottom {MIN_VAL_LIMIT}.csv'
 
 # https://stackoverflow.com/a/179608/5531122
 if os.path.isfile(test_name):
@@ -77,13 +93,10 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
             filler[filler < MIN_VAL_LIMIT] = MIN_VAL_LIMIT
         np.around(filler, decimals=0, out=filler)
 
-        # print(filler)
-        # filler = filler.astype(int)
-        # print(filler)
 
     # Values for Top 95%, 90%, 80% of partners
     range_size = np.amax(filler) - np.amin(filler) + 1
-    value_at_95, value_at_90, value_at_80 = np.percentile(range_size,
+    top_95_value, top_90_value, top_80_value = np.percentile(range_size,
                                                           [95, 90, 80])
 
     result = np.zeros((7, POPULATION))
@@ -107,20 +120,17 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
             result[2][i] += filler[x]
 
             # Filling target values
+            # Best value
             if result[2][i] == np.amax(filler):
-                # Best
                 result[3][i] = 1
 
-            elif result[2][i] >= value_at_95:
-                # Top 95
+            elif result[2][i] >= top_95_value:
                 result[4][i] = 1
 
-            elif result[2][i] >= value_at_90:
-                # Top 90
+            elif result[2][i] >= top_90_value:
                 result[5][i] = 1
 
-            elif result[2][i] >= value_at_80:
-                # Top 80
+            elif result[2][i] >= top_80_value:
                 result[6][i] = 1
 
     # Evaluating last position
@@ -128,12 +138,10 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
     if filler[-1] == np.amax(filler):
         result[3][-1] += 1
     return result
-'''
-def multiprocessing(num_cores: int, function: callable) ->
 
-
-
-
+def multiprocess(_) -> np.ndarray:
+    result = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
+                        MIN_VAL_LIMIT, MAX_VAL_LIMIT)
 
     if first_ten.value < 10:
         lock = mp.Lock()
@@ -162,15 +170,14 @@ def multiprocessing(num_cores: int, function: callable) ->
 
             # https://stackoverflow.com/a/367065/5531122
             sys.stdout.flush()
-'''
+    return result
 
 if __name__ == "__main__":
     time0 = time.time()
     finished = np.zeros((7, POPULATION))
 
     pool = mp.Pool()
-    results = pool.map(single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
-                                  MIN_VAL_LIMIT, MAX_VAL_LIMIT), range(CYCLES))
+    results = pool.map(multiprocess, range(CYCLES))
     pool.close()
     pool.join()
 
