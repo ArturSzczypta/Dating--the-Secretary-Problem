@@ -8,22 +8,24 @@ import time
 import os
 import sys
 
+from pathlib import Path
+
 import pandas as pd
 
 time0 = time.time()
 
 # How many times to run the simulation
-CYCLES = 100000
+CYCLES = 10000
 # Potential dating partners
-POPULATION = 1000
+POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
 MIN_VAL = 1
 # Max value (if there'san improvement it will go up with time)
-MAX_VAL = 1000
+MAX_VAL = 200
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% impr.)
 IMPROVEMENT = 1.1
 # In case you are or become soo attractive that you can hit the limit
-MAX_VAL_LIMIT = 20000
+MAX_VAL_LIMIT = 200
 # In case it gets only worse
 MIN_VAL_LIMIT = 0
 
@@ -31,14 +33,14 @@ MIN_VAL_LIMIT = 0
 # For time estimate
 first_ten = mp.Value('i', 0)
 
-result_folder = os.getcwd() + '\\Results'
+result_folder = Path.cwd() / 'Results'
 
-if not os.path.exists(result_folder):
-    os.makedirs(result_folder)
+if not result_folder.exists():
+    result_folder.mkdir(parents=True)
 os.chdir(result_folder)
 
-test_name = f'pop {POPULATION} cy {CYCLES} min {MIN_VAL} max {MAX_VAL}' \
-            f' imp {IMPROVEMENT} upper {MAX_VAL_LIMIT} bottom {MIN_VAL_LIMIT}.csv'
+test_name = f'pop {POPULATION} cy {CYCLES} imp {IMPROVEMENT} min {MIN_VAL} ' \
+            f'max {MAX_VAL} upper {MAX_VAL_LIMIT} bottom {MIN_VAL_LIMIT}.csv'
 
 # https://stackoverflow.com/a/179608/5531122
 if os.path.isfile(test_name):
@@ -53,7 +55,7 @@ if MAX_VAL_LIMIT <= MAX_VAL:
     MAX_VAL_LIMIT = MAX_VAL
 
 
-def single_run() -> np.ndarray:
+def single_run(_) -> np.ndarray:
     '''Generates a single run of the simulation'''
     if MAX_VAL - MIN_VAL == POPULATION:
         filler = np.arange(MIN_VAL, MAX_VAL + 1)

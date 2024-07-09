@@ -15,9 +15,9 @@ import pandas as pd
 
 # Inputs
 # The higher the value the more presice the values (100000 is sufficient)
-CYCLES = 800
+CYCLES = 100000
 # Potential dating partners
-POPULATION = 10
+POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
 MIN_VAL = 1
 # Max value, assuming there is no IMPROVEMENT in partners with time
@@ -182,5 +182,3 @@ df = pd.DataFrame(finished, columns=names)
 # https://stackoverflow.com/a/20168394/5531122
 df.index = np.arange(1, len(df)+1)
 df.to_csv(test_name, index=True, header=True, sep=' ')
-
-if __name__== "__main__":
