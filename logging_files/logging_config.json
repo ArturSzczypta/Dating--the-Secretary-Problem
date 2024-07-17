@@ -25,10 +25,10 @@
     },
     "formatters": {
         "console": {
-            "format": "%(asctime)s - %(filename)s - %(levelname)s - %(funcName)s - %(message)s"
+            "format": "%(asctime)s - %(filename)s - %(levelname)s - %(message)s"
         },
         "file": {
-            "format": "%(asctime)s - %(name)s - %(filename)s - %(levelname)s - %(funcName)s - %(message)s"
+            "format": "%(asctime)s - %(name)s - %(filename)s - %(levelname)s - %(message)s"
         }
     }
 }

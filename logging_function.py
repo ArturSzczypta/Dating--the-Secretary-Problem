@@ -32,7 +32,7 @@ if __name__ == '__main__':
     current_file_name = Path(__file__).stem
     log_file_name = f'{current_file_name}_log.log'
 
-    BASE_DIR = Path(__file__).parent.parent
+    BASE_DIR = Path(__file__).parent
     LOGGING_FILE = BASE_DIR / 'logging_files' / log_file_name
     LOGGING_JSON = BASE_DIR / 'logging_files' / 'logging_config.json'
 

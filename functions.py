@@ -1,5 +1,6 @@
 '''Generates a csv file with the results of "the secretary problem"
-First script created, so I decided to leave hyperlinks to the sources'''
+I decided to leave hyperlinks to the sources'''
+
 import multiprocessing as mp
 import numpy as np
 import logging
@@ -23,29 +24,29 @@ LOGGING_JSON = BASE_DIR / 'logging_files' / 'logging_config.json'
 l_f.configure_logging(LOGGING_JSON, LOGGING_FILE)
 
 
-
-time0 = time.time()
-
 # How many times to run the simulation
-CYCLES = 1000
+CYCLES = 2000
 # Potential dating partners
 POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
 MIN_VAL = 1
-# Max value (if there'san improvement it will go up with time)
+# Max value (if there's an improvement it will go up with time)
 MAX_VAL = 200
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% impr.)
-IMPROVEMENT = 1.1
-# In case you are or become soo attractive that you can hit the limit
-MAX_VAL_LIMIT = 200
+IMPROVEMENT = 1.9
 # In case it gets only worse
 MIN_VAL_LIMIT = 0
+# In case you are or become soo attractive that you can hit the limit
+MAX_VAL_LIMIT = 200
+if MAX_VAL_LIMIT <= MAX_VAL:
+    MAX_VAL_LIMIT = MAX_VAL
 
 multiprocess =  True
 if multiprocess:
     logging.info(f'Number of cores: {mp.cpu_count()}')
     # For time estimate
     first_ten = mp.Value('i', 0)
+
 
 result_folder = Path.cwd() / 'Results'
 
@@ -64,10 +65,6 @@ if os.path.isfile(test_name):
 if IMPROVEMENT != 1:
     increm = np.linspace(1, IMPROVEMENT, endpoint=True, num=POPULATION)
     np.around(increm, decimals=round(math.log(POPULATION, 10) + 2), out=increm)
-
-if MAX_VAL_LIMIT <= MAX_VAL:
-    MAX_VAL_LIMIT = MAX_VAL
-
 
 def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
                MIN_VAL_LIMIT: int, MAX_VAL_LIMIT: int) -> np.ndarray:
@@ -139,7 +136,8 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
         result[3][-1] += 1
     return result
 
-def multiprocess(_) -> np.ndarray:
+def multiprocess_run(_) -> np.ndarray:
+    ''' Adds time estimation and return calculations from single_run'''
     result = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
                         MIN_VAL_LIMIT, MAX_VAL_LIMIT)
 
@@ -156,17 +154,16 @@ def multiprocess(_) -> np.ndarray:
             # per %
             hours, rem = divmod(now, 3600)
             minutes, seconds = divmod(rem, 60)
-            print('Time given:\t\thr:mn:sec.')
-            print(10/CYCLES*100, '% Takes\t'
-                  "{:0>2}:{:0>2}:{:05.3f}".format(int(hours),
-                                                  int(minutes), seconds))
-
+            logging.info('Time given:\thr:mn:sec.')
+            logging.info(f'1% ({10/CYCLES*100} Cycles) Takes '
+                         "{:0>2}:{:0>2}:{:04.2f}".format(int(hours),
+                                                         int(minutes), seconds))
             # Untill Ready
             hours, rem = divmod(estimate, 3600)
             minutes, seconds = divmod(rem, 60)
-            print('Remaining:\t\t'
-                  "{:0>2}:{:0>2}:{:05.3f}".format(int(hours),
-                                                  int(minutes), seconds))
+            logging.info('Remaining: '
+                         "{:0>2}:{:0>2}:{:04.2f}".format(int(hours),
+                                                         int(minutes), seconds))
 
             # https://stackoverflow.com/a/367065/5531122
             sys.stdout.flush()
@@ -175,36 +172,57 @@ def multiprocess(_) -> np.ndarray:
 if __name__ == "__main__":
     time0 = time.time()
     finished = np.zeros((7, POPULATION))
-
-    pool = mp.Pool()
-    results = pool.map(multiprocess, range(CYCLES))
-    pool.close()
-    pool.join()
-
-    # Time it has taken
-    print('------------')
-    hours, rem = divmod(time.time()-time0, 3600)
-    minutes, seconds = divmod(rem, 60)
-    print('Actual:\t\t\t'
-          "{:0>2}:{:0>2}:{:05.3f}".format(int(hours), int(minutes), seconds))
-
-    merging = np.zeros((7, POPULATION))
-
-    # No Need for shared arrays
-    # https://stackoverflow.com/a/44703026/5531122
+    raw_result = np.zeros((7, POPULATION))
     np.set_printoptions(precision=4, suppress=True)
-    for a in results:
-        merging += a
 
-    merging[0] /= CYCLES*POPULATION
-    merging[1] /= CYCLES
-    merging[2] /= CYCLES*POPULATION
-    merging[3] /= CYCLES
-    merging[4] /= CYCLES
-    merging[5] /= CYCLES
-    merging[6] /= CYCLES
+    if multiprocess:
+        pool = mp.Pool()
+        results = pool.map(multiprocess_run, range(CYCLES))
+        pool.close()
+        pool.join()
 
-    finished = np.transpose(merging)
+        # Time it has taken
+        hours, rem = divmod(time.time()-time0, 3600)
+        minutes, seconds = divmod(rem, 60)
+        logging.info('Actual: '
+            "{:0>2}:{:0>2}:{:04.2f}".format(int(hours), int(minutes), seconds))
+        
+        
+        # No Need for shared arrays
+        # https://stackoverflow.com/a/44703026/5531122
+        np.set_printoptions(precision=4, suppress=True)
+        for a in results:
+            raw_result += a
+    else:
+        # Estimate time after 10% is finished
+        cycles_first_10 = CYCLES//10
+        for i in range(CYCLES):
+            results = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
+                                 MIN_VAL_LIMIT, MAX_VAL_LIMIT)
+            raw_result += results
+        hours, rem = divmod((time.time()-time0)*10, 3600)
+        minutes, seconds = divmod(rem, 60)
+        logging.info(f'{cycles_first_10:>2d} %  -  Remaining Time: '
+            f'{int(hours):0>2}:{int(minutes):0>2}:{seconds:01.1f}')
+        
+        for i in range(CYCLES - cycles_first_10):
+            results = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
+                                 MIN_VAL_LIMIT, MAX_VAL_LIMIT)
+            raw_result += results
+        
+        logging.info('Actual: '
+                "{:0>2}:{:0>2}:{:04.2f}".format(int(hours), int(minutes),
+                                                seconds))
+
+    raw_result[0] /= CYCLES*POPULATION
+    raw_result[1] /= CYCLES
+    raw_result[2] /= CYCLES*POPULATION
+    raw_result[3] /= CYCLES
+    raw_result[4] /= CYCLES
+    raw_result[5] /= CYCLES
+    raw_result[6] /= CYCLES
+
+    finished = np.transpose(raw_result)
 
     names = ['baseline_total', 'baseline_best', 'total',
              'the_best', 'top_95', 'top_90', 'top_80']
@@ -212,4 +230,4 @@ if __name__ == "__main__":
     df = pd.DataFrame(finished, columns=names)
     # https://stackoverflow.com/a/20168394/5531122
     df.index = np.arange(1, len(df) + 1)
-    df.to_csv(test_name, index=True, header=True, sep=' ')
+    df.to_csv(test_name, index=True, header=True, sep='\t')
