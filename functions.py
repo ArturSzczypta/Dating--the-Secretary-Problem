@@ -25,23 +25,23 @@ l_f.configure_logging(LOGGING_JSON, LOGGING_FILE)
 
 
 # How many times to run the simulation
-CYCLES = 2000
+CYCLES = 1
 # Potential dating partners
-POPULATION = 100
+POPULATION = 10
 # Min value (0 would give nicer averages but no one would date a literal 0)
 MIN_VAL = 1
 # Max value (if there's an improvement it will go up with time)
-MAX_VAL = 200
+MAX_VAL = 10
 # How much you'll improve until the end (1.0 - no improvement, 1.5 - 50% impr.)
-IMPROVEMENT = 1.9
+IMPROVEMENT = 1.0
 # In case it gets only worse
 MIN_VAL_LIMIT = 0
 # In case you are or become soo attractive that you can hit the limit
-MAX_VAL_LIMIT = 200
+MAX_VAL_LIMIT = 100
 if MAX_VAL_LIMIT <= MAX_VAL:
     MAX_VAL_LIMIT = MAX_VAL
 
-multiprocess =  True
+multiprocess = False
 if multiprocess:
     logging.info(f'Number of cores: {mp.cpu_count()}')
     # For time estimate
@@ -55,11 +55,11 @@ if not result_folder.exists():
 os.chdir(result_folder)
 
 test_name = f'pop {POPULATION} cy {CYCLES} imp {IMPROVEMENT} min {MIN_VAL} ' \
-            f'max {MAX_VAL} upper {MAX_VAL_LIMIT} bottom {MIN_VAL_LIMIT}.csv'
+            f'max {MAX_VAL} bottom {MIN_VAL_LIMIT} upper {MAX_VAL_LIMIT}.csv'
 
 # https://stackoverflow.com/a/179608/5531122
-if os.path.isfile(test_name):
-    sys.exit('Already Genarated')
+'''if os.path.isfile(test_name):
+    sys.exit('Calculation Already Genarated')'''
 
 # Calculating the improvement
 if IMPROVEMENT != 1:
@@ -80,6 +80,7 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
         filler = np.concatenate([filler, extra])
 
     np.random.shuffle(filler)
+    logging.debug(f'filler\n: {filler}')
 
     # recalculate for improvement
     if IMPROVEMENT != 1:
@@ -90,9 +91,8 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
             filler[filler < MIN_VAL_LIMIT] = MIN_VAL_LIMIT
         np.around(filler, decimals=0, out=filler)
 
-
     # Values for Top 95%, 90%, 80% of partners
-    range_size = np.amax(filler) - np.amin(filler) + 1
+    range_size = np.amax(filler) - np.amin(filler)
     top_95_value, top_90_value, top_80_value = np.percentile(range_size,
                                                           [95, 90, 80])
 
@@ -134,6 +134,7 @@ def single_run(POPULATION: int, IMPROVEMENT: float, MIN_VAL: int, MAX_VAL: int,
     result[2][-1] = filler[-1]
     if filler[-1] == np.amax(filler):
         result[3][-1] += 1
+    logging.debug(f'result\n: {result}')
     return result
 
 def multiprocess_run(_) -> np.ndarray:
@@ -187,7 +188,6 @@ if __name__ == "__main__":
         logging.info('Actual: '
             "{:0>2}:{:0>2}:{:04.2f}".format(int(hours), int(minutes), seconds))
         
-        
         # No Need for shared arrays
         # https://stackoverflow.com/a/44703026/5531122
         np.set_printoptions(precision=4, suppress=True)
@@ -197,18 +197,19 @@ if __name__ == "__main__":
         # Estimate time after 10% is finished
         cycles_first_10 = CYCLES//10
         for i in range(CYCLES):
-            results = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
+            result = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
                                  MIN_VAL_LIMIT, MAX_VAL_LIMIT)
-            raw_result += results
+            raw_result += result
         hours, rem = divmod((time.time()-time0)*10, 3600)
         minutes, seconds = divmod(rem, 60)
-        logging.info(f'{cycles_first_10:>2d} %  -  Remaining Time: '
+        logging.info(f'{cycles_first_10:>2d} % - Remaining Time: '
             f'{int(hours):0>2}:{int(minutes):0>2}:{seconds:01.1f}')
         
+        # Rest of cycles
         for i in range(CYCLES - cycles_first_10):
-            results = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
+            result = single_run(POPULATION, IMPROVEMENT, MIN_VAL, MAX_VAL,
                                  MIN_VAL_LIMIT, MAX_VAL_LIMIT)
-            raw_result += results
+            raw_result += result
         
         logging.info('Actual: '
                 "{:0>2}:{:0>2}:{:04.2f}".format(int(hours), int(minutes),
@@ -230,4 +231,6 @@ if __name__ == "__main__":
     df = pd.DataFrame(finished, columns=names)
     # https://stackoverflow.com/a/20168394/5531122
     df.index = np.arange(1, len(df) + 1)
-    df.to_csv(test_name, index=True, header=True, sep='\t')
+    
+    # Line commented, script is not giving right output
+    #df.to_csv(test_name, index=True, header=True, sep='\t')

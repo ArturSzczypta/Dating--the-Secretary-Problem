@@ -5,6 +5,7 @@ Single core calculation
 import os
 import sys
 import time
+from pathlib import Path
 
 import math
 import numpy as np
@@ -15,7 +16,7 @@ import pandas as pd
 
 # Inputs
 # The higher the value the more presice the values (100000 is sufficient)
-CYCLES = 100000
+CYCLES = 1002
 # Potential dating partners
 POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
@@ -34,12 +35,12 @@ MIN_VAL_LIMIT = 0
 # If you don't want to do STEPs make STEPs same or bigger than population
 STEP = 10
 
-result_folder = os.getcwd() + '\\Results'
+result_folder = Path.cwd() / 'Results'
 
-if not os.path.exists(result_folder):
-    os.makedirs(result_folder)
-
+if not result_folder.exists():
+    result_folder.mkdir(parents=True)
 os.chdir(result_folder)
+
 
 # Create file name for resulting table
 test_name = f'Pop {POPULATION} Cy {CYCLES} Min {MIN_VAL} Max {MAX_VAL} \
@@ -181,4 +182,4 @@ names  = ['baseline_total', 'baseline_best', 'total',
 df = pd.DataFrame(finished, columns=names)
 # https://stackoverflow.com/a/20168394/5531122
 df.index = np.arange(1, len(df)+1)
-df.to_csv(test_name, index=True, header=True, sep=' ')
+df.to_csv(test_name, index=True, header=True, sep='\t')
