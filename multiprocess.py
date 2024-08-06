@@ -15,7 +15,7 @@ import pandas as pd
 time0 = time.time()
 
 # How many times to run the simulation
-CYCLES = 1002
+CYCLES = 1007
 # Potential dating partners
 POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)

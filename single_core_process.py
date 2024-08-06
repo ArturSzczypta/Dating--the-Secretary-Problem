@@ -16,7 +16,7 @@ import pandas as pd
 
 # Inputs
 # The higher the value the more presice the values (100000 is sufficient)
-CYCLES = 1002
+CYCLES = 1005
 # Potential dating partners
 POPULATION = 100
 # Min value (0 would give nicer averages but no one would date a literal 0)
