@@ -21,10 +21,10 @@ def configure_logging(json_file: Path, log_file: Path) -> None:
     for handler in handlers.values():
         if handler.get('class') == 'logging.FileHandler':
             handler['filename'] = str(log_file)
-            print(f"Log file set to: {handler['filename']}")
+            logging.info(f"Log file set to: {handler['filename']}")
 
     logging.config.dictConfig(log_conf_json)
-    logging.info(f'Logging configuration loaded from {json_file}')
+    logging.info(f'Logging configuration loaded from\n{json_file}\n\n')
 
 
 if __name__ == '__main__':
